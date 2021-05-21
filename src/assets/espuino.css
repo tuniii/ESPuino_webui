@@ -1,0 +1,106 @@
+.filetree {
+    border: 1px solid black;
+    height: 200px;
+    margin: 0em 0em 1em 0em;
+    overflow-y: scroll;
+}
+.slider.slider-horizontal {
+    width: 60%;
+    margin-left: 1em;
+    margin-right: 1em;
+
+}
+.slider-handle{
+    height: 30px;
+    width: 30px;
+    top: -5px;
+}
+
+legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0 10px; /* To give a bit of padding on the left and right */
+    border-bottom:none;
+}
+
+.icon-pos{
+    top: 0.3em;
+    position: relative;
+ }
+.reboot{
+    color:white;
+}
+.reboot:hover{
+    color: orange;
+}
+
+.fa-sync:hover {
+    color: #666666;
+}
+
+.clickForRefresh {
+    text-align: center;
+    color: gray;
+    cursor: pointer;
+    margin-top: 5em;
+}
+
+.clickForRefresh:hover {
+    color: darkgray;
+}
+
+.filetree-container {
+    position: relative;
+}
+
+.indexing-progress {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.7;
+    display: none;
+}
+
+.refreshAction{
+    text-align: right;
+    font-size: 0.8em;
+}
+
+.refreshAction:hover{
+    cursor: pointer;
+    color: darkgray;
+}
+
+.overlay {
+    z-index: 9;
+    opacity: 0.8;
+    background: #1a1919;
+    height: 200px;
+    display: none;
+    width: 100%;
+}
+
+#SubTabContent.tab-content {
+    display: flex;
+}
+
+#SubTabContent.tab-content > .tab-pane {
+    display: block; /* undo "display: none;" */
+    visibility: hidden;
+    margin-right: -100%;
+    width: 100%;
+}
+
+#SubTabContent.tab-content > .active {
+    visibility: visible;
+}
+
+/* IOS display fix */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAAAAADhgtq/AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAR0lEQVR4nGP5z4ADsOCSGOoyC+NRabjMQqjQQrgUTCYeIrQQyEI3DSyFJIHkApAUkgSy21B0oLo6fiGSBKp/kCUGU4hSRQYAYg0Rw+gGlUQAAAAASUVORK5CYII=') no-repeat;
+    background-position: center right;
+}
