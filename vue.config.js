@@ -1,8 +1,8 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 //const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
-    chainWebpack: config => {
+    /*chainWebpack: config => {
         const svgRule = config.module.rule('svg')
         svgRule.uses.clear()
 
@@ -39,14 +39,14 @@ module.exports = {
                 args[0].inlineSource = '.(js|css)$'
                 return args
             })
-    },
+    },*/
 
     pluginOptions: {
         compression: {
             gzip: {
                 filename: '[file].gz[query]',
                 algorithm: 'gzip',
-                include: /\.(html|ico)(\?.*)?$/i,
+                include: /\.(html|js|ico)(\?.*)?$/i,
             }
         }
     },
@@ -54,8 +54,11 @@ module.exports = {
     filenameHashing: false,
 
     configureWebpack: {
+        mode: 'production',
         optimization: {
-            splitChunks: false
+            splitChunks: false,
+            nodeEnv: 'production',
+            minimize: true
         },
         plugins: [
             //new BundleAnalyzerPlugin(),

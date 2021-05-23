@@ -1,34 +1,35 @@
 <template>
   <v-container>
-      <v-subheader>Steuerung</v-subheader>
-      <div class="form-group col-md-12">
-        <div class="buttons">
-          <v-btn onclick="sendControl(173)" icon fab x-large>
-            <v-icon>mdi-skip-backward</v-icon>
-          </v-btn>
-          <v-btn onclick="sendControl(171)" icon fab x-large>
-            <v-icon>mdi-rewind</v-icon>
-          </v-btn>
-          <v-btn onclick="sendControl(170)" icon fab x-large>
-            <v-icon>mdi-pause</v-icon>
-          </v-btn>
-          <v-btn onclick="sendControl(172)" icon fab x-large>
-            <v-icon>mdi-fast-forward</v-icon>
-          </v-btn>
-          <v-btn onclick="sendControl(174)" icon fab x-large>
-            <v-icon>mdi-skip-forward</v-icon>
-          </v-btn>
-        </div>
+    <v-subheader>Steuerung</v-subheader>
+    <div class="form-group col-md-12">
+      <div class="buttons">
+        <v-btn @click="sendControl(173)" icon fab x-large>
+          <v-icon>{{ icons.skipBack }}</v-icon>
+        </v-btn>
+        <v-btn @click="sendControl(171)" icon fab x-large>
+          <v-icon>{{ icons.fastBack }}</v-icon>
+        </v-btn>
+        <v-btn @click="sendControl(170)" icon fab x-large>
+          <v-icon>{{ icons.pause }}</v-icon>
+        </v-btn>
+        <v-btn @click="sendControl(172)" icon fab x-large>
+          <v-icon>{{ icons.fastForward }}</v-icon>
+        </v-btn>
+        <v-btn @click="sendControl(174)" icon fab x-large>
+          <v-icon>{{ icons.skipForward }}</v-icon>
+        </v-btn>
       </div>
-      <v-subheader>Lautstärke</v-subheader>
+    </div>
+    <v-subheader>Lautstärke</v-subheader>
     <v-card-text>
       <v-slider
-        v-model="volValue"
+        v-model="volume"
         prepend-icon="mdi-volume-medium"
         append-icon="mdi-volume-high"
         max="21"
         min="1"
         thumb-label
+        @change="sendVolume()"
       ></v-slider>
     </v-card-text>
   </v-container>
@@ -55,13 +56,47 @@
 </template>
 
 <script>
+import {
+  mdiSkipBackward,
+  mdiRewind,
+  mdiPause,
+  mdiFastForward,
+  mdiSkipForward,
+} from "@mdi/js";
 
 export default {
   name: "Control",
   props: {},
+  methods: {
+    sendControl: function (cmd) {
+        var obj = {
+            "controls": {
+                action: cmd
+            }
+        };
+        var jsonObj = JSON.stringify(obj);
+        this.$emit('sendMessage', jsonObj);
+    },
+    sendVolume: function () {
+        var obj = {
+            "controls": {
+                set_volume: this.$data.volume
+            }
+        };
+        var jsonObj = JSON.stringify(obj);
+        this.$emit('sendMessage', jsonObj);
+    }
+  },
   data() {
     return {
-      volValue: 1,
+      volume: 1,
+      icons: {
+        skipBack: mdiSkipBackward,
+        fastBack: mdiRewind,
+        pause: mdiPause,
+        fastForward: mdiFastForward,
+        skipForward: mdiSkipForward,
+      },
     };
   },
   mounted: function () {

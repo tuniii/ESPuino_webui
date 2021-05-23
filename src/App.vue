@@ -24,7 +24,7 @@
       </v-btn>
     </v-app-bar>
     <v-main>
-  <v-card width="800" class="mx-auto">
+      <v-card width="800" class="mx-auto">
         <v-tabs v-model="tab">
           <v-tab v-for="item in items" :key="item.tab">
             {{ item.tab }}
@@ -33,11 +33,11 @@
 
         <v-tabs-items v-model="tab">
           <v-tab-item v-for="item in items" :key="item.tab">
-                <component :is="item.content"></component>
+            <component :is="item.content" @sendMessage="sendMessage"></component>
           </v-tab-item>
         </v-tabs-items>
-  </v-card>
-   </v-main>
+      </v-card>
+    </v-main>
   </v-app>
 </template>
 
@@ -55,6 +55,7 @@ export default {
 
   data() {
     return {
+      connection: null,
       tab: null,
       items: [
         { tab: "Steuerung", content: Control },
@@ -62,5 +63,29 @@ export default {
       ],
     };
   },
+  methods: {
+    sendMessage: function(message) {
+      console.log("Hello")
+      console.log(this.connection)
+      this.connection.send(message)
+    },
+    sendMessageFromChild(message) {
+      this.sendMessage(message)
+    }
+  },
+  created: function() {
+    console.log("Starting connection to WebSocket Server")
+    //this.connection = new WebSocket("wss://echo.websocket.org")
+    this.connection = new WebSocket("ws://" + location.host + "/ws")
+
+    this.connection.onmessage = function(event) {
+      console.log(event)
+    }
+
+    this.connection.onopen = function(event) {
+      console.log(event)
+      console.log("Successfully connected to the echo websocket server...")
+    }
+  }
 };
 </script>
