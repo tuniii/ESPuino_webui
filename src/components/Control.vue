@@ -24,8 +24,8 @@
     <v-card-text>
       <v-slider
         v-model="volume"
-        prepend-icon="mdi-volume-medium"
-        append-icon="mdi-volume-high"
+        :prepend-icon="icons.volumeMedium"
+        :append-icon="icons.volumeHigh"
         max="21"
         min="1"
         thumb-label
@@ -33,26 +33,6 @@
       ></v-slider>
     </v-card-text>
   </v-container>
-  <!--div class="form-group col-md-12">
-      <legend>Lautst&auml;rke</legend>
-      <b-row>
-        <b-col cols="12" md="1">
-          <font-awesome-icon icon="volume-down" size="2x" />
-        </b-col>
-        <b-col cols="12" md="10">
-          <vue-slider
-            v-model="volValue"
-            :min="1"
-            :max="21"
-            :tooltip="'always'"
-          />
-        </b-col>
-        <b-col cols="12" md="1">
-          <font-awesome-icon icon="volume-up" size="2x" />
-        </b-col>
-      </b-row>
-      <input data-provide="slider" type="number" data-slider-min="1" data-slider-max="21" min="1" max="21" class="form-control" id="setVolume"
-                data-slider-value="%CURRENT_VOLUME%" value="%CURRENT_VOLUME%" onchange="sendVolume(this.value)"-->
 </template>
 
 <script>
@@ -62,6 +42,8 @@ import {
   mdiPause,
   mdiFastForward,
   mdiSkipForward,
+  mdiVolumeMedium,
+  mdiVolumeHigh,
 } from "@mdi/js";
 
 export default {
@@ -96,6 +78,8 @@ export default {
         pause: mdiPause,
         fastForward: mdiFastForward,
         skipForward: mdiSkipForward,
+        volumeMedium: mdiVolumeMedium,
+        volumeHigh: mdiVolumeHigh
       },
     };
   },

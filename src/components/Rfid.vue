@@ -1,26 +1,34 @@
 <template>
   <v-container>
     <v-subheader>Dateien</v-subheader>
-    <v-treeview
-      v-model="tree"
-      :open="initiallyOpen"
-      :items="items"
-      activatable
-      item-key="name"
-      dense
-    >
-      <template v-slot:prepend="{ item, open }">
-          <v-icon v-if="!item.file">
-            {{ open ? "mdi-folder-open" : "mdi-folder" }}
+    <v-card height="200px" class="scroll" scrollable flat>
+      <v-treeview
+        v-model="tree"
+        :open="initiallyOpen"
+        :items="items"
+        :load-children="loadChildrens"
+        @update:active="onItemSelect"
+        return-object
+        activatable
+        item-key="name"
+        dense
+      >
+        <template v-slot:prepend="{ item, open }">
+          <v-icon v-if="item.dir">
+            {{ open ? icons.folderOpen : icons.folder }}
+          </v-icon>
+          <v-icon v-else-if="isAudioFile(item.name)">
+            {{ icons.audioFile }}
           </v-icon>
           <v-icon v-else>
-            {{ files[item.file] }}
+            {{ icons.unknownFile }}
           </v-icon>
-      </template>
-      <template v-slot:label="{ item }">
-      <a @contextmenu="show">{{ item.name }}</a>
-    </template>
-    </v-treeview>
+        </template>
+        <!--template v-slot:label="{ item }">
+          <a @contextmenu="show">{{ item.name }}</a>
+        </template-->
+      </v-treeview>
+    </v-card>
     <v-menu
       v-model="showMenu"
       :position-x="x"
@@ -38,6 +46,7 @@
       <v-textarea
         class="mx-2"
         rows="1"
+        v-model="selectedPath"
         label="Pfad auf SD-Karte"
         no-resize
       ></v-textarea>
@@ -67,11 +76,20 @@
 </template>
 
 <script>
+import { mdiFolderOpen, mdiFolder, mdiMusicNote, mdiFile } from "@mdi/js";
 
 export default {
   name: "Control",
   props: {},
   data: () => ({
+    initiallyOpen: ['/'],
+    selectedPath: '',
+    icons: {
+      folderOpen: mdiFolderOpen,
+      folder: mdiFolder,
+      audioFile: mdiMusicNote,
+      unknownFile: mdiFile,
+    },
     showMenu: false,
     x: 0,
     y: 0,
@@ -81,7 +99,6 @@ export default {
       { title: "Click Me" },
       { title: "Click Me 2" },
     ],
-    initiallyOpen: ["public"],
     files: {
       html: "mdi-language-html5",
       js: "mdi-nodejs",
@@ -91,72 +108,51 @@ export default {
       png: "mdi-file-image",
       txt: "mdi-file-document-outline",
       xls: "mdi-file-excel",
-      audio: "mdi-music-note",
+      audio: mdiMusicNote,
     },
     tree: [],
     items: [
       {
-        name: ".git",
-      },
-      {
-        name: "node_modules",
-      },
-      {
-        name: "public",
+        name: "/",
+        path: "/",
+        dir: true,
         children: [
-          {
-            name: "static",
-            children: [
-              {
-                name: "logo.png",
-                file: "png",
-              },
-            ],
-          },
-          {
-            name: "favicon.ico",
-            file: "png",
-          },
-          {
-            name: "index.html",
-            file: "html",
-          },
-        ],
-      },
-      {
-        name: ".gitignore",
-        file: "txt",
-      },
-      {
-        name: "babel.config.js",
-        file: "js",
-      },
-      {
-        name: "package.json",
-        file: "json",
-      },
-      {
-        name: "README.md",
-        file: "md",
-      },
-      {
-        name: "vue.config.js",
-        file: "js",
-      },
-      {
-        name: "yarn.lock",
-        file: "txt",
-      },
-      {
-        name: "test.mp3",
-        file: "audio",
-      },
+        ]
+      }
     ],
   }),
   mounted: function () {},
   methods: {
+    isAudioFile: function (name) {
+      var fileExt = [".mp3", ".ogg", ".wave", ".wma", ".acc", ".flac", ".m4a"];
+      return fileExt.some(function (suffix) {
+        return name.toLowerCase().endsWith(suffix);
+    });
+    },
+    async loadChildrens (item) {
+      const paramPath = (item.path.endsWith('/') && (item.path.length > 1)) ? item.path.slice(0, -1) : item.path
+      return this.axios
+      .get('http://192.168.1.126/explorer?path=' + paramPath)
+      .then((response) => {
+        response.data.forEach(element => {
+          element.path = item.path + element.name
+          if(element.dir) {
+            element.path += '/'
+            element.children = []
+          }
+        });
+        item.children.push(...response.data)
+        console.log(response)
+        /*return fetch('/explorer?path=/' + item.path)
+          .then(res => res.json())
+          .then(json => (item.children.push(...json)))
+          .catch(err => console.warn(err))*/
+      })
+    },
+    onItemSelect(selection) {
+      this.selectedPath = (selection.length == 1) ? selection[0].path : ''
+    },
     onButtonClick() {
-      this.isSelecting = true;
       window.addEventListener(
         "focus",
         () => {
@@ -186,7 +182,7 @@ export default {
 </script>
 
 <style scoped>
-.v-card-text {
-  max-height: 200px;
+.scroll {
+  overflow-y: scroll;
 }
 </style>

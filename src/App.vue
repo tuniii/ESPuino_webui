@@ -1,30 +1,40 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" dark app>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-      </div>
+    <v-app-bar app color="white" flat>
+      <v-container class="py-0 fill-height">
+        <v-icon class="mr-10" size="32">{{ icons.speaker }}</v-icon>
 
-      <v-spacer></v-spacer>
+        <v-btn v-for="item in items" :key="item.name" @click="changeComponent(item)" text>
+          {{ item.name }}
+        </v-btn>
 
-      <v-btn color="blue-grey" class="ma-2 white--text" href="/restart">
-        Restart
-        <v-icon right dark> mdi-restart </v-icon>
-      </v-btn>
-      <v-btn color="blue-grey" class="ma-2 white--text" href="/restart">
-        Standby
-        <v-icon right dark> mdi-power-standby </v-icon>
-      </v-btn>
+        <v-spacer></v-spacer>
+
+        <v-responsive max-width="260">
+          <v-text-field
+            dense
+            flat
+            hide-details
+            rounded
+            solo-inverted
+          ></v-text-field>
+        </v-responsive>
+      </v-container>
     </v-app-bar>
-    <v-main>
-      <v-card width="800" class="mx-auto">
+
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-sheet min-height="70vh" rounded="lg">
+          <component
+              :is="this.selectedComponent"
+              @sendMessage="sendMessage"
+            ></component>
+        </v-sheet>
+      </v-container>
+    </v-main>
+
+    <!--v-main>
+      <v-card class="mx-auto">
         <v-tabs v-model="tab">
           <v-tab v-for="item in items" :key="item.tab">
             {{ item.tab }}
@@ -33,24 +43,28 @@
 
         <v-tabs-items v-model="tab">
           <v-tab-item v-for="item in items" :key="item.tab">
-            <component :is="item.content" @sendMessage="sendMessage"></component>
+            <component
+              :is="item.content"
+              @sendMessage="sendMessage"
+            ></component>
           </v-tab-item>
         </v-tabs-items>
       </v-card>
-    </v-main>
+    </v-main-->
   </v-app>
 </template>
 
 <script>
 import Control from "./components/Control";
 import Rfid from "./components/Rfid";
+import { mdiSpeaker } from "@mdi/js";
 
 export default {
   name: "App",
 
   components: {
     Control,
-    Rfid,
+    Rfid
   },
 
   data() {
@@ -58,34 +72,43 @@ export default {
       connection: null,
       tab: null,
       items: [
-        { tab: "Steuerung", content: Control },
-        { tab: "RFID", content: Rfid },
+        { name: "Steuerung", component: Control },
+        { name: "RFID", component: Rfid },
       ],
+      selectedComponent: Control,
+      icons: {
+        speaker: mdiSpeaker,
+      },
     };
   },
+  computed: {
+  },
   methods: {
-    sendMessage: function(message) {
-      console.log("Hello")
-      console.log(this.connection)
-      this.connection.send(message)
+    sendMessage: function (message) {
+      console.log("Hello");
+      console.log(this.connection);
+      this.connection.send(message);
     },
     sendMessageFromChild(message) {
-      this.sendMessage(message)
-    }
+      this.sendMessage(message);
+    },
+    changeComponent: function (item) {
+      this.selectedComponent = item.component
+    },
   },
-  created: function() {
-    console.log("Starting connection to WebSocket Server")
+  created: function () {
+    console.log("Starting connection to WebSocket Server");
     //this.connection = new WebSocket("wss://echo.websocket.org")
-    this.connection = new WebSocket("ws://" + location.host + "/ws")
+    this.connection = new WebSocket("ws://" + location.host + "/ws");
 
-    this.connection.onmessage = function(event) {
-      console.log(event)
-    }
+    this.connection.onmessage = function (event) {
+      console.log(event);
+    };
 
-    this.connection.onopen = function(event) {
-      console.log(event)
-      console.log("Successfully connected to the echo websocket server...")
-    }
-  }
+    this.connection.onopen = function (event) {
+      console.log(event);
+      console.log("Successfully connected to the echo websocket server...");
+    };
+  },
 };
 </script>
